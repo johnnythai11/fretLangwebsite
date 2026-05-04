@@ -1,131 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fretlang</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fretlang | A Simpler-Than-Python DSL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="hero">
-    <div class="hero-inner">
-      <p class="eyebrow">DSL Final Project</p>
-      <h1>Fretlang</h1>
-      <p class="tagline">A guitar-driven programming language built with textX and Python.</p>
-      <div class="hero-links">
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="#top">
+        <span class="brand-icon">♫</span>
+        <span>Fretlang</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#about">About</a>
+        <a href="#syntax">Syntax</a>
+        <a href="#grammar">Grammar</a>
         <a href="#examples">Examples</a>
-        <a href="#mapping">Mapping</a>
-        <a href="#architecture">Architecture</a>
-      </div>
+        <a href="#links">Links</a>
+      </nav>
     </div>
   </header>
 
-  <main>
-    <section>
-      <h2>Purpose and Philosophy</h2>
-      <p>
-        Fretlang turns guitar performance into code. Chords become keywords, notes become
-        letters and numbers, and guitar techniques become syntax actions. The goal is to make
-        programming feel musical, physical, and performative.
-      </p>
-    </section>
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">DSL Final Project • textX + Python</p>
+          <h1>Fretlang</h1>
+          <h2>A colorful programming language that is simpler than Python.</h2>
+          <p class="lead">
+            Fretlang is a guitar-inspired domain-specific language designed to make code feel
+            creative, physical, and easy to read. It uses a tiny set of commands like
+            <code>let</code>, <code>print</code>, <code>loop</code>, <code>if</code>, and <code>end</code>.
+          </p>
+          <div class="hero-buttons">
+            <a class="button primary" href="#examples">See Programs</a>
+            <a class="button secondary" href="#links">Project Links</a>
+          </div>
+        </div>
 
-    <section id="mapping">
-      <h2>Mapping Overview</h2>
-      <div class="grid two">
-        <article class="card">
-          <h3>Chord Keywords</h3>
-          <ul>
-            <li>Cmaj -> let</li>
-            <li>Amin -> loop</li>
-            <li>Gmaj -> if</li>
-            <li>G7 -> elif</li>
-            <li>Emin -> print</li>
-            <li>Fmaj -> end or close block</li>
-          </ul>
-        </article>
-        <article class="card">
-          <h3>Technique Actions</h3>
-          <ul>
-            <li>double strum -> {</li>
-            <li>muted strum -> }</li>
-            <li>slide up -> ++</li>
-            <li>slide down -> --</li>
-            <li>hammer-on -> +</li>
-            <li>pull-off -> -</li>
-            <li>bend -> *</li>
-            <li>harmonic -> new line</li>
-          </ul>
-        </article>
-      </div>
-    </section>
-
-    <section id="architecture">
-      <h2>Implementation</h2>
-      <div class="grid three">
-        <article class="card">
-          <h3>1. Token Mapper</h3>
-          <p>Maps note, chord, and technique events into Fretlang tokens.</p>
-        </article>
-        <article class="card">
-          <h3>2. textX Grammar</h3>
-          <p>Parses normalized `.fret` programs using a custom DSL grammar.</p>
-        </article>
-        <article class="card">
-          <h3>3. Python Runtime</h3>
-          <p>Interprets the AST and executes variables, loops, conditionals, and print.</p>
-        </article>
+        <div class="hero-card">
+          <div class="terminal">
+            <div class="terminal-top">
+              <span></span><span></span><span></span>
+            </div>
+<pre><span class="kw">let</span> i <span class="num">1</span>
+<span class="kw">loop</span> <span class="num">15</span>
+<span class="kw">if</span> i % <span class="num">15</span> == <span class="num">0</span>
+<span class="kw">print</span> <span class="str">FizzBuzz</span>
+<span class="kw">elif</span> i % <span class="num">3</span> == <span class="num">0</span>
+<span class="kw">print</span> <span class="str">Fizz</span>
+<span class="kw">elif</span> i % <span class="num">5</span> == <span class="num">0</span>
+<span class="kw">print</span> <span class="str">Buzz</span>
+<span class="kw">else</span>
+<span class="kw">print</span> i
+<span class="kw">end</span>
+add i <span class="num">1</span>
+<span class="kw">end</span></pre>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section id="examples">
-      <h2>Program Examples</h2>
-      <div class="tabs">
-        <button class="tab active" data-target="hello">Hello</button>
-        <button class="tab" data-target="count">Count</button>
-        <button class="tab" data-target="fizzbuzz">FizzBuzz</button>
-      </div>
-      <div class="panel active" id="hello">
-<pre><code>print Hello</code></pre>
-      </div>
-      <div class="panel" id="count">
-<pre><code>let i = 1
-loop 4 {
-    print i
-    i++
-}</code></pre>
-      </div>
-      <div class="panel" id="fizzbuzz">
-<pre><code>let i = 1
-loop 15 {
-    if i % 15 == 0 {
-        print FizzBuzz
-    } elif i % 3 == 0 {
-        print Fizz
-    } elif i % 5 == 0 {
-        print Buzz
-    } elif i % 1 == 0 {
-        print i
-    }
-    i++
-}</code></pre>
+    <section id="about" class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Purpose & Philosophy</p>
+          <h3>Programming should be expressive, minimal, and fun.</h3>
+          <p>
+            Fretlang was created as a final project to show that a language can be smaller and
+            easier than Python while still supporting variables, loops, conditionals, arithmetic,
+            and output. The syntax is intentionally tiny so it is easy to parse, easy to explain,
+            and great for demos.
+          </p>
+        </div>
+
+        <div class="cards three">
+          <article class="card accent-pink">
+            <h4>Simpler than Python</h4>
+            <p>No colons, no parentheses, no semicolons, and very few keywords.</p>
+          </article>
+          <article class="card accent-cyan">
+            <h4>Easy to Parse</h4>
+            <p>Built with textX grammar and a Python interpreter for clean DSL structure.</p>
+          </article>
+          <article class="card accent-gold">
+            <h4>Creative by Design</h4>
+            <p>Inspired by guitar performance and designed to feel playful and memorable.</p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section>
-      <h2>Submission Links</h2>
-      <p>Replace these placeholders after you upload your project:</p>
-      <ul>
-        <li>Live Website Link: <span class="placeholder">live link</span></li>
-        <li>Git Source Code Link: <span class="placeholder">Repo</span></li>
-      </ul>
+    <section id="syntax" class="section alt">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Syntax</p>
+          <h3>Small command set. One statement per line.</h3>
+        </div>
+
+        <div class="cards two">
+          <article class="card">
+            <h4>Core Commands</h4>
+            <ul class="nice-list">
+              <li><code>let name value</code></li>
+              <li><code>print value</code></li>
+              <li><code>loop number</code> ... <code>end</code></li>
+              <li><code>if condition</code> ... <code>end</code></li>
+              <li><code>elif condition</code></li>
+              <li><code>else</code></li>
+              <li><code>add name number</code></li>
+              <li><code>sub name number</code></li>
+              <li><code>mul name number</code></li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h4>Design Rules</h4>
+            <ul class="nice-list">
+              <li>One command per line</li>
+              <li>Blocks close with <code>end</code></li>
+              <li>No braces required</li>
+              <li>No colons</li>
+              <li>No semicolons</li>
+              <li>Minimal punctuation</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="grammar" class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Grammar</p>
+          <h3>Compact EBNF-style grammar for Fretlang</h3>
+        </div>
+
+<pre class="code-block">program      ::= statement*
+
+statement    ::= let_stmt
+               | print_stmt
+               | loop_stmt
+               | if_stmt
+               | add_stmt
+               | sub_stmt
+               | mul_stmt
+
+let_stmt     ::= 'let' IDENTIFIER value
+print_stmt   ::= 'print' value
+loop_stmt    ::= 'loop' NUMBER statement* 'end'
+
+if_stmt      ::= 'if' condition statement*
+                 ( 'elif' condition statement* )*
+                 ( 'else' statement* )?
+                 'end'
+
+add_stmt     ::= 'add' IDENTIFIER NUMBER
+sub_stmt     ::= 'sub' IDENTIFIER NUMBER
+mul_stmt     ::= 'mul' IDENTIFIER NUMBER
+
+condition    ::= value operator value
+value        ::= NUMBER | IDENTIFIER | WORD
+operator     ::= '==' | '!=' | '%' | '>' | '&lt;'</pre>
+      </div>
+    </section>
+
+    <section id="examples" class="section alt">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Programs</p>
+          <h3>Example Fretlang files</h3>
+          <p>These are the example programs used in the final project demo.</p>
+        </div>
+
+        <div class="cards three">
+          <article class="card">
+            <h4>hello.fret</h4>
+<pre class="mini-code">print Hello</pre>
+          </article>
+
+          <article class="card">
+            <h4>count.fret</h4>
+<pre class="mini-code">let i 1
+loop 5
+print i
+add i 1
+end</pre>
+          </article>
+
+          <article class="card">
+            <h4>multiply.fret</h4>
+<pre class="mini-code">let x 2
+mul x 3
+print x</pre>
+          </article>
+
+          <article class="card">
+            <h4>countdown.fret</h4>
+<pre class="mini-code">let i 5
+loop 5
+print i
+sub i 1
+end
+print Done</pre>
+          </article>
+
+          <article class="card">
+            <h4>echo.fret</h4>
+<pre class="mini-code">let word Hello
+print word</pre>
+          </article>
+
+          <article class="card feature">
+            <h4>fizzbuzz.fret</h4>
+<pre class="mini-code">let i 1
+loop 15
+if i % 15 == 0
+print FizzBuzz
+elif i % 3 == 0
+print Fizz
+elif i % 5 == 0
+print Buzz
+else
+print i
+end
+add i 1
+end</pre>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Implementation</p>
+          <h3>How Fretlang works</h3>
+        </div>
+
+        <div class="cards three">
+          <article class="card">
+            <h4>1. Syntax Design</h4>
+            <p>The language keeps only the commands needed for small programs and demos.</p>
+          </article>
+          <article class="card">
+            <h4>2. textX Grammar</h4>
+            <p>A custom grammar parses <code>.fret</code> source files into a structured model.</p>
+          </article>
+          <article class="card">
+            <h4>3. Python Interpreter</h4>
+            <p>The runtime executes variables, loops, conditionals, and print statements.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="links" class="section alt">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Submission Links</p>
+          <h3>Replace these placeholders after you publish</h3>
+        </div>
+
+        <div class="cards two">
+          <article class="card">
+            <h4>Live Website Link</h4>
+            <p><a class="button secondary full" href="#">ADD_GITHUB_PAGES_URL_HERE</a></p>
+          </article>
+          <article class="card">
+            <h4>Git Source Code Link</h4>
+            <p><a class="button secondary full" href="#">ADD_GITHUB_REPO_URL_HERE</a></p>
+          </article>
+        </div>
+      </div>
     </section>
   </main>
 
-  <footer>
-    <p>Fretlang - Guitar Programming Language Project</p>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p><strong>Fretlang</strong> • A Simple Guitar-Inspired Programming Language</p>
+      <p>Built with textX and Python</p>
+    </div>
   </footer>
-
-  <script src="script.js"></script>
 </body>
 </html>
