@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fretlang</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">DSL Final Project</p>
+      <h1>Fretlang</h1>
+      <p class="tagline">A guitar-driven programming language built with textX and Python.</p>
+      <div class="hero-links">
+        <a href="#examples">Examples</a>
+        <a href="#mapping">Mapping</a>
+        <a href="#architecture">Architecture</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Purpose and Philosophy</h2>
+      <p>
+        Fretlang turns guitar performance into code. Chords become keywords, notes become
+        letters and numbers, and guitar techniques become syntax actions. The goal is to make
+        programming feel musical, physical, and performative.
+      </p>
+    </section>
+
+    <section id="mapping">
+      <h2>Mapping Overview</h2>
+      <div class="grid two">
+        <article class="card">
+          <h3>Chord Keywords</h3>
+          <ul>
+            <li>Cmaj -> let</li>
+            <li>Amin -> loop</li>
+            <li>Gmaj -> if</li>
+            <li>G7 -> elif</li>
+            <li>Emin -> print</li>
+            <li>Fmaj -> end or close block</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Technique Actions</h3>
+          <ul>
+            <li>double strum -> {</li>
+            <li>muted strum -> }</li>
+            <li>slide up -> ++</li>
+            <li>slide down -> --</li>
+            <li>hammer-on -> +</li>
+            <li>pull-off -> -</li>
+            <li>bend -> *</li>
+            <li>harmonic -> new line</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="architecture">
+      <h2>Implementation</h2>
+      <div class="grid three">
+        <article class="card">
+          <h3>1. Token Mapper</h3>
+          <p>Maps note, chord, and technique events into Fretlang tokens.</p>
+        </article>
+        <article class="card">
+          <h3>2. textX Grammar</h3>
+          <p>Parses normalized `.fret` programs using a custom DSL grammar.</p>
+        </article>
+        <article class="card">
+          <h3>3. Python Runtime</h3>
+          <p>Interprets the AST and executes variables, loops, conditionals, and print.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="examples">
+      <h2>Program Examples</h2>
+      <div class="tabs">
+        <button class="tab active" data-target="hello">Hello</button>
+        <button class="tab" data-target="count">Count</button>
+        <button class="tab" data-target="fizzbuzz">FizzBuzz</button>
+      </div>
+      <div class="panel active" id="hello">
+<pre><code>print Hello</code></pre>
+      </div>
+      <div class="panel" id="count">
+<pre><code>let i = 1
+loop 4 {
+    print i
+    i++
+}</code></pre>
+      </div>
+      <div class="panel" id="fizzbuzz">
+<pre><code>let i = 1
+loop 15 {
+    if i % 15 == 0 {
+        print FizzBuzz
+    } elif i % 3 == 0 {
+        print Fizz
+    } elif i % 5 == 0 {
+        print Buzz
+    } elif i % 1 == 0 {
+        print i
+    }
+    i++
+}</code></pre>
+      </div>
+    </section>
+
+    <section>
+      <h2>Submission Links</h2>
+      <p>Replace these placeholders after you upload your project:</p>
+      <ul>
+        <li>Live Website Link: <span class="placeholder">ADD_GITHUB_PAGES_URL_HERE</span></li>
+        <li>Git Source Code Link: <span class="placeholder">ADD_GITHUB_REPO_URL_HERE</span></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Fretlang - Guitar Programming Language Project</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
