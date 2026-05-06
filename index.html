@@ -171,6 +171,210 @@ operator     ::= '==' | '!=' | '%' | '>' | '&lt;'</pre>
       </div>
     </section>
 
+    <section id="interpreter" class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Interpreter</p>
+          <h3>Compact EBNF-style interpreter for Fretlang</h3>
+        </div>
+
+<pre class="code-block">
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Dict, List
+
+from ast_nodes import (
+    BinaryOp,
+    DecrementStatement,
+    Identifier,
+    IfStatement,
+    IncrementStatement,
+    LetStatement,
+    LoopStatement,
+    NumberLiteral,
+    PrintStatement,
+    Program,
+    StringLiteral,
+    UnaryOp,
+    UpdateStatement,
+)
+
+
+class FretlangRuntimeError(RuntimeError):
+    """Raised for runtime errors in Fretlang."""
+
+
+@dataclass
+class Environment:
+    store: Dict[str, object] = field(default_factory=dict)
+
+    def has(self, name: str) -> bool:
+        return name in self.store
+
+    def get(self, name: str) -> object:
+        if name not in self.store:
+            raise FretlangRuntimeError(
+                f'Variable "{name}" is not defined. '
+                'Did you forget to declare it with let first?'
+            )
+        return self.store[name]
+
+    def set(self, name: str, value: object) -> None:
+        self.store[name] = value
+
+
+class FretlangInterpreter:
+    """Interpreter for the Fretlang AST.
+
+    Design note:
+    The original guitar mapping does not define quote characters for string literals,
+    but FizzBuzz still needs words like Fizz, Buzz, and FizzBuzz. To make the language
+    playable on guitar, PrintStatement treats an undefined bare identifier as a raw word.
+    That means:
+
+        print i          -> prints the value of variable i, if it exists
+        print Fizz       -> prints the literal word "Fizz" if no variable exists
+    """
+
+    def __init__(self) -> None:
+        self.env = Environment()
+        self.output: List[str] = []
+
+    def run(self, node):
+        method_name = f'visit_{type(node).__name__}'
+        method = getattr(self, method_name, None)
+        if method is None:
+            raise FretlangRuntimeError(f'No interpreter handler for {type(node).__name__}')
+        return method(node)
+
+    def visit_Program(self, node: Program) -> List[str]:
+        for statement in node.statements:
+            self.run(statement)
+        return self.output
+
+    def visit_LetStatement(self, node: LetStatement) -> None:
+        value = self.run(node.value)
+        self.env.set(node.name, value)
+
+    def visit_LoopStatement(self, node: LoopStatement) -> None:
+        count = self.run(node.count)
+        if not isinstance(count, int):
+            raise FretlangRuntimeError(f'Loop count must be an integer, got {count!r}.')
+        if count < 0:
+            raise FretlangRuntimeError(f'Loop count must be non-negative, got {count}.')
+        for _ in range(count):
+            for statement in node.body:
+                self.run(statement)
+
+    def visit_IfStatement(self, node: IfStatement) -> None:
+        if self._is_truthy(self.run(node.condition)):
+            for statement in node.then_body:
+                self.run(statement)
+            return
+
+        for condition, body in node.elif_clauses:
+            if self._is_truthy(self.run(condition)):
+                for statement in body:
+                    self.run(statement)
+                return
+
+        if node.else_body is not None:
+            for statement in node.else_body:
+                self.run(statement)
+
+    def visit_PrintStatement(self, node: PrintStatement) -> None:
+        value = self._resolve_print_value(node.value)
+        text = str(value)
+        self.output.append(text)
+        print(text)
+
+    def visit_IncrementStatement(self, node: IncrementStatement) -> None:
+        current = self.env.get(node.name)
+        if not isinstance(current, int):
+            raise FretlangRuntimeError(
+                f'Cannot increment non-integer variable "{node.name}" with value {current!r}.'
+            )
+        self.env.set(node.name, current + 1)
+
+    def visit_DecrementStatement(self, node: DecrementStatement) -> None:
+        current = self.env.get(node.name)
+        if not isinstance(current, int):
+            raise FretlangRuntimeError(
+                f'Cannot decrement non-integer variable "{node.name}" with value {current!r}.'
+            )
+        self.env.set(node.name, current - 1)
+
+    def visit_UpdateStatement(self, node: UpdateStatement) -> None:
+        """Handle  add name amount / sub name amount / mul name amount."""
+        current = self.env.get(node.name)
+        amount = self.run(node.amount)
+        if not isinstance(current, (int, float)):
+            raise FretlangRuntimeError(
+                f'Cannot update non-numeric variable "{node.name}" with value {current!r}.'
+            )
+        if node.op == '+':
+            self.env.set(node.name, current + amount)
+        elif node.op == '-':
+            self.env.set(node.name, current - amount)
+        elif node.op == '*':
+            self.env.set(node.name, current * amount)
+        else:
+            raise FretlangRuntimeError(f'Unknown update operator: {node.op!r}')
+
+    def visit_BinaryOp(self, node: BinaryOp):
+        left = self.run(node.left)
+        right = self.run(node.right)
+
+        if node.op == '%':
+            return left % right
+        if node.op == '==':
+            return left == right
+        if node.op == '!=':
+            return left != right
+        if node.op == '+':
+            return left + right
+        if node.op == '-':
+            return left - right
+        if node.op == '*':
+            return left * right
+        if node.op == '**':
+            return left ** right
+        if node.op == '>':
+            return left > right
+        if node.op == '<':
+            return left < right
+        if node.op == '&&':
+            return self._is_truthy(left) and self._is_truthy(right)
+
+        raise FretlangRuntimeError(f'Unsupported binary operator: {node.op}')
+
+    def visit_UnaryOp(self, node: UnaryOp):
+        value = self.run(node.operand)
+        if node.op == '!':
+            return not self._is_truthy(value)
+        raise FretlangRuntimeError(f'Unsupported unary operator: {node.op}')
+
+    def visit_NumberLiteral(self, node: NumberLiteral) -> int:
+        return int(node.value)
+
+    def visit_StringLiteral(self, node: StringLiteral) -> str:
+        return node.value
+
+    def visit_Identifier(self, node: Identifier):
+        return self.env.get(node.name)
+
+    def _is_truthy(self, value: object) -> bool:
+        return bool(value)
+
+    def _resolve_print_value(self, expr):
+        if isinstance(expr, Identifier) and not self.env.has(expr.name):
+            return expr.name
+        return self.run(expr)
+
+      </div>
+    </section>    
+
     <section id="examples" class="section alt">
       <div class="container">
         <div class="section-heading">
