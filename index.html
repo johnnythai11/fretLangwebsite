@@ -347,63 +347,171 @@ class FretlangInterpreter:
         <div class="section-heading">
           <p class="eyebrow">Programs</p>
           <h3>Example Fretlang files</h3>
-          <p>These are the example programs used in the final project demo.</p>
+          <p>Each line shows the guitar input that generates it — <span class="ex-cyan">chord keywords</span>, <span class="ex-white">single notes</span>, and <span class="ex-gold">power chords</span>.</p>
         </div>
 
         <div class="cards three">
+
           <article class="card">
             <h4>hello.fret</h4>
-            <pre class="mini-code">print Hello</pre>
+            <div class="fret-map">
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Gmaj</span><span class="notechip note-name">E</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">print</span> <span class="str">Hello</span></code>
+              </div>
+            </div>
+            <div class="fret-output"><span class="out-label">output:</span> Hello</div>
           </article>
 
           <article class="card">
             <h4>count.fret</h4>
-<pre class="mini-code">let i 1
-loop 5
-print i
-add i 1
-end</pre>
+            <div class="fret-map">
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Cmaj</span><span class="notechip note-name">G#</span><span class="notechip note-name">F</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">let</span> i <span class="num">1</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Amin</span><span class="notechip note-name">G</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">loop</span> <span class="num">5</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Gmaj</span><span class="notechip note-name">G#</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">print</span> i</code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip power-chord">D5</span><span class="notechip note-name">G#</span><span class="notechip note-name">F</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code">add i <span class="num">1</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip power-chord">B5</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">end</span></code>
+              </div>
+            </div>
+            <div class="fret-output"><span class="out-label">output:</span> 1 · 2 · 3 · 4 · 5</div>
           </article>
 
           <article class="card">
             <h4>multiply.fret</h4>
-<pre class="mini-code">let x 2
-mul x 3
-print x</pre>
+            <div class="fret-map">
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Cmaj</span><span class="notechip note-name">A</span><span class="notechip note-name">D</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">let</span> x <span class="num">2</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Dmaj</span><span class="notechip note-name">A</span><span class="notechip note-name">G</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code">mul x <span class="num">3</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Gmaj</span><span class="notechip note-name">A</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">print</span> x</code>
+              </div>
+            </div>
+            <div class="fret-output"><span class="out-label">output:</span> 6</div>
           </article>
 
           <article class="card">
             <h4>countdown.fret</h4>
-<pre class="mini-code">let i 5
-loop 5
-print i
-sub i 1
-end
-print Done</pre>
+            <div class="fret-map">
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Cmaj</span><span class="notechip note-name">G#</span><span class="notechip note-name">G</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">let</span> i <span class="num">5</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Amin</span><span class="notechip note-name">G</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">loop</span> <span class="num">5</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Gmaj</span><span class="notechip note-name">G#</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">print</span> i</code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip power-chord">E5</span><span class="notechip note-name">G#</span><span class="notechip note-name">F</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code">sub i <span class="num">1</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip power-chord">B5</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">end</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Gmaj</span><span class="notechip note-name">E</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">print</span> <span class="str">Done</span></code>
+              </div>
+            </div>
+            <div class="fret-output"><span class="out-label">output:</span> 5 · 4 · 3 · 2 · 1 · Done</div>
           </article>
 
           <article class="card">
             <h4>echo.fret</h4>
-<pre class="mini-code">let word Hello
-print word</pre>
+            <div class="fret-map">
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Cmaj</span><span class="notechip note-name">E</span><span class="notechip note-name">E</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">let</span> word <span class="str">Hello</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Gmaj</span><span class="notechip note-name">E</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">print</span> word</code>
+              </div>
+            </div>
+            <div class="fret-output"><span class="out-label">output:</span> Hello</div>
           </article>
 
           <article class="card feature">
             <h4>fizzbuzz.fret</h4>
-<pre class="mini-code">let i 1
-loop 15
-if i % 15 == 0
-print FizzBuzz
-elif i % 3 == 0
-print Fizz
-elif i % 5 == 0
-print Buzz
-else
-print i
-end
-add i 1
-end</pre>
+            <div class="fret-map">
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Cmaj</span><span class="notechip note-name">G#</span><span class="notechip note-name">F</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">let</span> i <span class="num">1</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Amin</span><span class="notechip power-chord">A5+A5</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">loop</span> <span class="num">15</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Emin</span><span class="notechip note-name">G#</span><span class="notechip power-chord">B5</span><span class="notechip power-chord">A5+A5</span><span class="notechip note-name">F</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">if</span> i % <span class="num">15</span> == <span class="num">0</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip chord-name">Gmaj</span><span class="notechip note-name">E</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">print</span> <span class="str">FizzBuzz</span></code>
+              </div>
+              <div class="fret-line fret-line-dim">
+                <span class="fret-ellipsis">… elif / else branches …</span>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip power-chord">D5</span><span class="notechip note-name">G#</span><span class="notechip note-name">F</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code">add i <span class="num">1</span></code>
+              </div>
+              <div class="fret-line">
+                <div class="fret-chips"><span class="notechip power-chord">B5</span></div>
+                <div class="fret-arrow">→</div>
+                <code class="fret-code"><span class="kw">end</span></code>
+              </div>
+            </div>
+            <div class="fret-output"><span class="out-label">output:</span> 1 · 2 · Fizz · 4 · Buzz · Fizz · 7 …</div>
           </article>
+
         </div>
       </div>
     </section>
@@ -547,12 +655,62 @@ end</pre>
           <h3>See Fretlang in action</h3>
           <p>A walkthrough of the language running programs from syntax to output.</p>
         </div>
-        <div class="demo-video-wrapper">
-          <video controls preload="metadata">
-            <source src="images/Untitled design.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+
+        <!-- Video source toggle -->
+        <div class="video-toggle">
+          <button class="vtab active" data-vtab="file">📁 Local file</button>
+          <button class="vtab" data-vtab="youtube">▶ YouTube / Vimeo</button>
         </div>
+
+        <!-- Local MP4 panel -->
+        <div id="vpanel-file" class="vpanel active">
+          <div class="demo-video-wrapper" id="video-container">
+            <video id="demo-video" controls preload="metadata">
+              <source src="images/Untitled_design.mp4" type="video/mp4" />
+            </video>
+            <!-- 404 / load-error fallback (shown by JS) -->
+            <div class="video-fallback" id="video-fallback" style="display:none">
+              <div class="vfallback-inner">
+                <span class="vfallback-icon">🎬</span>
+                <p class="vfallback-title">Video not found</p>
+                <p class="vfallback-body">
+                  <code>Untitled_design.mp4</code> returned a&nbsp;404. The file needs to be
+                  committed to your GitHub repo so GitHub&nbsp;Pages can serve it.
+                </p>
+                <div class="vfallback-steps">
+                  <div class="vstep"><span class="vstep-num">1</span>Add the file to your repo root</div>
+                  <div class="vstep"><span class="vstep-num">2</span><code>git add Untitled_design.mp4</code></div>
+                  <div class="vstep"><span class="vstep-num">3</span><code>git commit -m "add demo video"</code></div>
+                  <div class="vstep"><span class="vstep-num">4</span><code>git push</code></div>
+                </div>
+                <p class="vfallback-note">
+                  ⚠ GitHub Pages has a <strong>100 MB</strong> per-file limit.
+                  For larger videos, switch to the YouTube&nbsp;/ Vimeo tab above.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- YouTube / Vimeo embed panel -->
+        <div id="vpanel-youtube" class="vpanel">
+          <div class="demo-video-wrapper yt-wrapper">
+            <div class="yt-prompt" id="yt-prompt">
+              <span class="vfallback-icon">▶</span>
+              <p class="vfallback-title">Paste a YouTube or Vimeo URL</p>
+              <div class="yt-input-row">
+                <input id="yt-url" type="url" placeholder="https://www.youtube.com/watch?v=…"
+                       spellcheck="false" autocomplete="off" />
+                <button class="button primary" id="yt-load">Embed</button>
+              </div>
+              <p class="vfallback-note">Upload your demo to YouTube (unlisted is fine), paste the link here, then copy the resulting embed URL into the HTML.</p>
+            </div>
+            <iframe id="yt-frame" style="display:none" allowfullscreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+            </iframe>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -860,6 +1018,73 @@ end</pre>
 
     /* initialise */
     reset();
+  })();
+  </script>
+  <script>
+  /* ── Video 404 detection & YouTube embed ───────────────── */
+  (function () {
+    const video    = document.getElementById('demo-video');
+    const fallback = document.getElementById('video-fallback');
+    const vtabs    = document.querySelectorAll('.vtab');
+    const vpanels  = document.querySelectorAll('.vpanel');
+
+    /* Show fallback if video fails to load (404, CORS, etc.) */
+    if (video) {
+      video.addEventListener('error', showFallback);
+      const src = video.querySelector('source');
+      if (src) src.addEventListener('error', showFallback);
+    }
+    function showFallback() {
+      if (video) video.style.display = 'none';
+      if (fallback) fallback.style.display = 'flex';
+    }
+
+    /* File / YouTube tab switcher */
+    vtabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        vtabs.forEach(t => t.classList.remove('active'));
+        vpanels.forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const panel = document.getElementById('vpanel-' + tab.dataset.vtab);
+        if (panel) panel.classList.add('active');
+      });
+    });
+
+    /* YouTube / Vimeo URL → embed URL */
+    function toEmbedUrl(raw) {
+      try {
+        const url = new URL(raw.trim());
+        if (url.hostname.includes('youtube.com') || url.hostname.includes('youtu.be')) {
+          const id = url.searchParams.get('v') ||
+                     (url.hostname === 'youtu.be' ? url.pathname.slice(1) : null);
+          if (id) return 'https://www.youtube.com/embed/' + id + '?autoplay=1';
+        }
+        if (url.hostname.includes('vimeo.com')) {
+          const id = url.pathname.split('/').filter(Boolean).pop();
+          if (id) return 'https://player.vimeo.com/video/' + id + '?autoplay=1';
+        }
+      } catch (_) {}
+      return null;
+    }
+
+    const ytInput  = document.getElementById('yt-url');
+    const ytBtn    = document.getElementById('yt-load');
+    const ytFrame  = document.getElementById('yt-frame');
+    const ytPrompt = document.getElementById('yt-prompt');
+
+    if (ytBtn) {
+      ytBtn.addEventListener('click', () => {
+        const embed = toEmbedUrl(ytInput ? ytInput.value : '');
+        if (!embed) {
+          if (ytInput) { ytInput.style.borderColor = '#f87171'; setTimeout(() => ytInput.style.borderColor = '', 1500); }
+          return;
+        }
+        ytFrame.src = embed;
+        ytFrame.style.display = 'block';
+        if (ytPrompt) ytPrompt.style.display = 'none';
+      });
+      if (ytInput) ytInput.addEventListener('keydown', e => { if (e.key === 'Enter') ytBtn.click(); });
+    }
   })();
   </script>
 </html>
