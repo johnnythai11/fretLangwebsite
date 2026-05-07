@@ -862,3 +862,242 @@ a:hover { text-decoration: underline; }
   font-size: 0.85rem;
   color: var(--muted);
 }
+
+/* ─── Video section enhancements ─────────────────────────── */
+
+.video-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.vtab {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.vtab:hover { color: var(--text); border-color: #3d5270; }
+.vtab.active { background: var(--accent); border-color: var(--accent); color: #040a14; }
+
+.vpanel { display: none; }
+.vpanel.active { display: block; }
+
+/* Video wrapper — reuse existing but needs flex for fallback overlay */
+.demo-video-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#demo-video {
+  width: 100%;
+  display: block;
+  max-height: 560px;
+  object-fit: contain;
+  background: #000;
+}
+
+/* Fallback card shown when video 404s */
+.video-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 2.5rem 1.5rem;
+  background: #060c18;
+}
+
+.vfallback-inner {
+  max-width: 520px;
+  text-align: center;
+}
+
+.vfallback-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.vfallback-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.vfallback-body {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+.vfallback-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+  background: #090f1c;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.vstep {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+
+.vstep-num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #040a14;
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vfallback-note {
+  font-size: 0.8rem;
+  color: #fbbf24;
+  margin-top: 0.5rem;
+}
+
+/* YouTube embed */
+.yt-wrapper { min-height: 320px; }
+
+.yt-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.yt-input-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 460px;
+  margin: 1rem 0 0.75rem;
+}
+
+.yt-input-row input {
+  flex: 1;
+  background: #090f1c;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.18s;
+}
+.yt-input-row input:focus { border-color: var(--accent); }
+.yt-input-row input::placeholder { color: #3d5270; }
+
+#yt-frame {
+  width: 100%;
+  min-height: 480px;
+  border: none;
+  background: #000;
+}
+
+/* ─── Example cards — guitar notation mapped ─────────────── */
+
+.ex-cyan  { color: var(--accent); font-weight: 600; }
+.ex-white { color: var(--text);   font-weight: 600; }
+.ex-gold  { color: var(--gold);   font-weight: 600; }
+
+/* One row: chips  →  code */
+.fret-map {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0.85rem 0 0.75rem;
+}
+
+.fret-line {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 26px;
+}
+
+.fret-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+/* override notechip size inside cards — slightly smaller */
+.fret-chips .notechip {
+  font-size: 0.68rem;
+  padding: 0.12em 0.45em;
+}
+
+.fret-arrow {
+  color: #3d5270;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  padding: 0 0.1rem;
+}
+
+.fret-code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* dim ellipsis row for fizzbuzz middle lines */
+.fret-line-dim {
+  grid-template-columns: 1fr;
+}
+
+.fret-ellipsis {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #334155;
+  font-style: italic;
+  padding-left: 0.15rem;
+}
+
+/* output line at the bottom of each card */
+.fret-output {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--card-border);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: #86efac;
+}
+
+.out-label {
+  color: #334155;
+  margin-right: 0.3rem;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
