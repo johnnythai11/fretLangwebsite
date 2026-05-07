@@ -569,3 +569,296 @@ a:hover { text-decoration: underline; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: #2d3e55; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #3d5270; }
+
+/* ─── Live Dashboard (mirrors Rich build_live_layout) ────── */
+
+/* Session picker tabs */
+.ui-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.ui-tab {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.ui-tab:hover { color: var(--text); border-color: #3d5270; }
+.ui-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #040a14;
+}
+
+/* Dashboard grid — left 60% / right 40% like Rich Layout */
+.rich-dashboard {
+  display: grid;
+  grid-template-columns: 6fr 4fr;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  min-height: 340px;
+}
+
+@media (max-width: 700px) {
+  .rich-dashboard { grid-template-columns: 1fr; }
+}
+
+.dash-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dash-right { display: flex; flex-direction: column; }
+
+/* Panels */
+.dash-panel {
+  background: #060c18;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-panel-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.dash-dots {
+  display: flex;
+  gap: 4px;
+  margin-right: 2px;
+}
+.dash-dots span {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  opacity: 0.55;
+}
+
+/* Panel colour variants */
+.dash-cyan   { border: 1px solid rgba(56,189,248,0.35); }
+.dash-bar-cyan {
+  background: rgba(56,189,248,0.1);
+  color: #38bdf8;
+  border-bottom: 1px solid rgba(56,189,248,0.2);
+}
+.dash-bar-cyan .dash-dots span { background: #38bdf8; }
+
+.dash-magenta { border: 1px solid rgba(217,70,239,0.35); }
+.dash-bar-magenta {
+  background: rgba(217,70,239,0.1);
+  color: #e879f9;
+  border-bottom: 1px solid rgba(217,70,239,0.2);
+}
+.dash-bar-magenta .dash-dots span { background: #e879f9; }
+
+.dash-yellow { border: 1px solid rgba(251,191,36,0.35); }
+.dash-bar-yellow {
+  background: rgba(251,191,36,0.08);
+  color: #fbbf24;
+  border-bottom: 1px solid rgba(251,191,36,0.2);
+}
+.dash-bar-yellow .dash-dots span { background: #fbbf24; }
+
+.dash-panel-title { opacity: 0.9; }
+
+.dash-panel-body {
+  padding: 0.85rem 1rem;
+  flex: 1;
+  overflow: auto;
+}
+
+/* Code panel */
+.dash-code {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.85;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  color: #94a3b8;
+  white-space: pre;
+  min-height: 80px;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; } 50% { opacity: 0; }
+}
+.cursor-blink {
+  color: var(--accent);
+  animation: blink 1s step-start infinite;
+}
+
+/* Notation panel */
+.dash-notation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  min-height: 48px;
+}
+
+.notation-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.notation-empty {
+  color: #3d5270;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+
+/* Detection & Output panel */
+.dash-detection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.det-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.75rem;
+}
+
+.det-label:first-child { margin-top: 0; }
+
+.det-value {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 1.5;
+  padding-left: 0.25rem;
+}
+
+.token-stream {
+  word-break: break-all;
+  color: #94a3b8;
+}
+
+.det-output {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-left: 0.25rem;
+}
+
+.output-line {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: #86efac;
+  font-weight: 600;
+}
+
+.dash-waiting { color: #334155; font-style: italic; }
+
+/* ─── Notation chips ───────────────────────────────────────── */
+/* These replicate _label_style() colors from ui.py */
+.notechip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18em 0.55em;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* Full chord keywords (Cmaj, Amin) → bold cyan */
+.chord-name {
+  color: #38bdf8;
+  background: rgba(56,189,248,0.12);
+  border: 1px solid rgba(56,189,248,0.25);
+}
+
+/* Single notes (G#, C, F) → white */
+.note-name {
+  color: #e2e8f0;
+  background: rgba(226,232,240,0.07);
+  border: 1px solid rgba(226,232,240,0.15);
+}
+
+/* Power chords (B5, D5, A5+A5) → bold yellow */
+.power-chord {
+  color: #fbbf24;
+  background: rgba(251,191,36,0.12);
+  border: 1px solid rgba(251,191,36,0.28);
+}
+
+/* ─── Controls ─────────────────────────────────────────────── */
+.ui-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.speed-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-left: 0.25rem;
+}
+
+.speed-label input[type=range] {
+  width: 110px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ─── Chord legend ─────────────────────────────────────────── */
+.chord-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  max-width: 600px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.legend-text {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
