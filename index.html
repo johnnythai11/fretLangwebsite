@@ -23,6 +23,7 @@
         <a href="#syntax">Syntax</a>
         <a href="#grammar">Grammar</a>
         <a href="#examples">Examples</a>
+        <a href="#live-ui">Live UI</a>
         <a href="#demo">Demo</a>
         <a href="#links">Links</a>
       </nav>
@@ -407,6 +408,112 @@ end</pre>
       </div>
     </section>
 
+    <!-- ── Live UI ────────────────────────────────────────── -->
+    <section id="live-ui" class="section alt">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Guitar → Code Pipeline</p>
+          <h3>Play guitar. Generate Fretlang.</h3>
+          <p>
+            The live mode streams real guitar audio through a detection pipeline. Chords and notes are
+            mapped to tokens in real time, building Fretlang source that is parsed and executed
+            immediately. The terminal dashboard below mirrors what the Python UI displays.
+          </p>
+        </div>
+
+        <!-- Session picker -->
+        <div class="ui-tabs">
+          <button class="ui-tab active" data-session="count">count.fret</button>
+          <button class="ui-tab" data-session="hello">hello.fret</button>
+          <button class="ui-tab" data-session="fizzbuzz">fizzbuzz.fret</button>
+        </div>
+
+        <!-- Rich terminal dashboard (mirrors build_live_layout from ui.py) -->
+        <div class="rich-dashboard">
+
+          <!-- Left column: code panel + notation panel -->
+          <div class="dash-left">
+            <div class="dash-panel dash-cyan">
+              <div class="dash-panel-bar dash-bar-cyan">
+                <span class="dash-dots"><span></span><span></span><span></span></span>
+                <span class="dash-panel-title">Generated Fretlang Code</span>
+              </div>
+              <div class="dash-panel-body">
+                <pre id="dash-code" class="dash-code"><span class="dash-waiting">▌ waiting for guitar input…</span></pre>
+              </div>
+            </div>
+
+            <div class="dash-panel dash-magenta">
+              <div class="dash-panel-bar dash-bar-magenta">
+                <span class="dash-dots"><span></span><span></span><span></span></span>
+                <span class="dash-panel-title">Guitar Input Notation</span>
+              </div>
+              <div class="dash-panel-body">
+                <div id="dash-notation" class="dash-notation">
+                  <span class="dash-waiting">waiting for input…</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right column: Detection & Output -->
+          <div class="dash-right">
+            <div class="dash-panel dash-yellow" style="height:100%">
+              <div class="dash-panel-bar dash-bar-yellow">
+                <span class="dash-dots"><span></span><span></span><span></span></span>
+                <span class="dash-panel-title">Detection &amp; Output</span>
+              </div>
+              <div class="dash-panel-body">
+                <div class="dash-detection">
+                  <p class="det-label">Last event</p>
+                  <p id="dash-last-event" class="det-value dash-waiting">—</p>
+
+                  <p class="det-label">Last 20 tokens</p>
+                  <p id="dash-tokens" class="det-value token-stream dash-waiting">—</p>
+
+                  <p class="det-label">Program output</p>
+                  <div id="dash-output" class="det-output">
+                    <span class="dash-waiting">—</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div><!-- .rich-dashboard -->
+
+        <!-- Playback controls -->
+        <div class="ui-controls">
+          <button class="button primary" id="dash-play">▶&nbsp; Play Session</button>
+          <button class="button secondary" id="dash-reset">↺&nbsp; Reset</button>
+          <label class="speed-label">
+            Speed
+            <input type="range" id="dash-speed" min="150" max="1100" value="550" step="50">
+          </label>
+        </div>
+
+        <!-- Chord / note color legend (from _label_style in ui.py) -->
+        <div class="chord-legend">
+          <div class="legend-item">
+            <span class="notechip chord-name">Cmaj</span>
+            <span class="legend-text">Chord keywords (Cmaj, Amin, Gmaj…) → language tokens</span>
+          </div>
+          <div class="legend-item">
+            <span class="notechip note-name">G#</span>
+            <span class="legend-text">Single notes (≤ 2 chars) → identifiers &amp; values</span>
+          </div>
+          <div class="legend-item">
+            <span class="notechip power-chord">B5</span>
+            <span class="legend-text">Power chords (A5, B5, D5…) → operators &amp; block endings</span>
+          </div>
+          <div class="legend-item">
+            <span class="notechip power-chord">A5+A5</span>
+            <span class="legend-text">Combined power chords → compound operators</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- ── Implementation ─────────────────────────────────── -->
     <section class="section alt">
       <div class="container">
@@ -484,5 +591,275 @@ end</pre>
   </footer>
 
   <script src="script.js"></script>
-</body>
+  <script>
+  /* ── Live Dashboard — mirrors build_live_layout / build_notation_lines from ui.py ── */
+  (function () {
+
+    /* chip type is derived exactly like _label_style() in ui.py:
+       - value in POWER_CHORD_NAMES or contains '+' → "power"
+       - value.length <= 2                          → "note"
+       - else                                       → "chord"                      */
+    const POWER = new Set(['E5','A5','B5','D5','G5']);
+    function chipType(label) {
+      if (POWER.has(label) || label.includes('+')) return 'power';
+      if (label.length <= 2) return 'note';
+      return 'chord';
+    }
+
+    /* Each frame is a complete UI snapshot identical to what
+       pipeline_thread() + build_live_layout() would emit.          */
+    const SESSIONS = {
+
+      /* ── count.fret ─────────────────────────────────────────── */
+      count: { title: 'count.fret', frames: [
+        { event:'—', notationLines:[], code:'', tokens:[], output:[] },
+        { event:'🎸 chord: Cmaj',
+          notationLines:[[{l:'Cmaj'}]],
+          code:'let', tokens:['let'], output:[] },
+        { event:'🎵 note: G#',
+          notationLines:[[{l:'Cmaj'},{l:'G#'}]],
+          code:'let i', tokens:['let','i'], output:[] },
+        { event:'🎵 note: C',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}]],
+          code:'let i 1', tokens:['let','i','1'], output:[] },
+        { event:'↵ ENTER',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[]],
+          code:'let i 1', tokens:['let','i','1'], output:[] },
+        { event:'🎸 chord: Amin',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'}]],
+          code:'let i 1\nloop', tokens:['let','i','1','loop'], output:[] },
+        { event:'🎵 note: G',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}]],
+          code:'let i 1\nloop 5', tokens:['let','i','1','loop','5'], output:[] },
+        { event:'↵ ENTER',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}],[]],
+          code:'let i 1\nloop 5', tokens:['let','i','1','loop','5'], output:[] },
+        { event:'🎸 chord: Gmaj',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}],[{l:'Gmaj'}]],
+          code:'let i 1\nloop 5\nprint', tokens:['let','i','1','loop','5','print'], output:[] },
+        { event:'🎵 note: G#',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}],[{l:'Gmaj'},{l:'G#'}]],
+          code:'let i 1\nloop 5\nprint i', tokens:['let','i','1','loop','5','print','i'], output:[] },
+        { event:'↵ ENTER',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}],[{l:'Gmaj'},{l:'G#'}],[]],
+          code:'let i 1\nloop 5\nprint i', tokens:['let','i','1','loop','5','print','i'], output:[] },
+        { event:'✨ power chord: D5',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}],[{l:'Gmaj'},{l:'G#'}],[{l:'D5'}]],
+          code:'let i 1\nloop 5\nprint i\nadd', tokens:['let','i','1','loop','5','print','i','add'], output:[] },
+        { event:'🎵 note: G#',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}],[{l:'Gmaj'},{l:'G#'}],[{l:'D5'},{l:'G#'}]],
+          code:'let i 1\nloop 5\nprint i\nadd i', tokens:['let','i','1','loop','5','print','i','add','i'], output:[] },
+        { event:'🎵 note: C',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}],[{l:'Gmaj'},{l:'G#'}],[{l:'D5'},{l:'G#'},{l:'C'}]],
+          code:'let i 1\nloop 5\nprint i\nadd i 1', tokens:['let','i','1','loop','5','print','i','add','i','1'], output:[] },
+        { event:'↵ ENTER',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}],[{l:'Gmaj'},{l:'G#'}],[{l:'D5'},{l:'G#'},{l:'C'}],[]],
+          code:'let i 1\nloop 5\nprint i\nadd i 1', tokens:['let','i','1','loop','5','print','i','add','i','1'], output:[] },
+        { event:'✨ power chord: B5',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}],[{l:'Gmaj'},{l:'G#'}],[{l:'D5'},{l:'G#'},{l:'C'}],[{l:'B5'}]],
+          code:'let i 1\nloop 5\nprint i\nadd i 1\nend', tokens:['let','i','1','loop','5','print','i','add','i','1','end'], output:[] },
+        { event:'↵ ENTER — program complete',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'C'}],[{l:'Amin'},{l:'G'}],[{l:'Gmaj'},{l:'G#'}],[{l:'D5'},{l:'G#'},{l:'C'}],[{l:'B5'}]],
+          code:'let i 1\nloop 5\nprint i\nadd i 1\nend', tokens:['let','i','1','loop','5','print','i','add','i','1','end'],
+          output:['1','2','3','4','5'] },
+      ]},
+
+      /* ── hello.fret ──────────────────────────────────────────── */
+      hello: { title: 'hello.fret', frames: [
+        { event:'—', notationLines:[], code:'', tokens:[], output:[] },
+        { event:'🎸 chord: Gmaj',
+          notationLines:[[{l:'Gmaj'}]],
+          code:'print', tokens:['print'], output:[] },
+        { event:'🎵 note: E',
+          notationLines:[[{l:'Gmaj'},{l:'E'}]],
+          code:'print Hello', tokens:['print','Hello'], output:[] },
+        { event:'↵ ENTER — program complete',
+          notationLines:[[{l:'Gmaj'},{l:'E'}]],
+          code:'print Hello', tokens:['print','Hello'],
+          output:['Hello'] },
+      ]},
+
+      /* ── fizzbuzz.fret (abbreviated — first branch shown) ────── */
+      fizzbuzz: { title: 'fizzbuzz.fret', frames: [
+        { event:'—', notationLines:[], code:'', tokens:[], output:[] },
+        { event:'🎸 chord: Cmaj',
+          notationLines:[[{l:'Cmaj'}]],
+          code:'let', tokens:['let'], output:[] },
+        { event:'🎵 note: G#  →  F',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}]],
+          code:'let i 1', tokens:['let','i','1'], output:[] },
+        { event:'↵ ENTER',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[]],
+          code:'let i 1', tokens:['let','i','1'], output:[] },
+        { event:'🎸 chord: Amin',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'}]],
+          code:'let i 1\nloop', tokens:['let','i','1','loop'], output:[] },
+        { event:'✨ combined: A5+A5  →  15',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'},{l:'A5+A5'}]],
+          code:'let i 1\nloop 15', tokens:['let','i','1','loop','15'], output:[] },
+        { event:'↵ ENTER',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'},{l:'A5+A5'}],[]],
+          code:'let i 1\nloop 15', tokens:['let','i','1','loop','15'], output:[] },
+        { event:'🎸 chord: Emin',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'},{l:'A5+A5'}],[{l:'Emin'}]],
+          code:'let i 1\nloop 15\nif', tokens:['let','i','1','loop','15','if'], output:[] },
+        { event:'🎵 note: G#  ✨ B5  ✨ A5+A5  →  i % 15 == 0',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'},{l:'A5+A5'}],[{l:'Emin'},{l:'G#'},{l:'B5'},{l:'A5+A5'},{l:'F'}]],
+          code:'let i 1\nloop 15\nif i % 15 == 0', tokens:['let','i','1','loop','15','if','i','%','15','==','0'], output:[] },
+        { event:'↵ ENTER',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'},{l:'A5+A5'}],[{l:'Emin'},{l:'G#'},{l:'B5'},{l:'A5+A5'},{l:'F'}],[]],
+          code:'let i 1\nloop 15\nif i % 15 == 0', tokens:['let','i','1','loop','15','if','i','%','15','==','0'], output:[] },
+        { event:'🎸 chord: Gmaj  +  🎵 note: E',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'},{l:'A5+A5'}],[{l:'Emin'},{l:'G#'},{l:'B5'},{l:'A5+A5'},{l:'F'}],[{l:'Gmaj'},{l:'E'}]],
+          code:'let i 1\nloop 15\nif i % 15 == 0\nprint FizzBuzz',
+          tokens:['let','i','1','loop','15','if','i','%','15','==','0','print','FizzBuzz'], output:[] },
+        { event:'↵ ENTER',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'},{l:'A5+A5'}],[{l:'Emin'},{l:'G#'},{l:'B5'},{l:'A5+A5'},{l:'F'}],[{l:'Gmaj'},{l:'E'}],[]],
+          code:'let i 1\nloop 15\nif i % 15 == 0\nprint FizzBuzz',
+          tokens:['let','i','1','loop','15','if','i','%','15','==','0','print','FizzBuzz'], output:[] },
+        { event:'✨ power chord: B5  (end if block)',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'},{l:'A5+A5'}],[{l:'Emin'},{l:'G#'},{l:'B5'},{l:'A5+A5'},{l:'F'}],[{l:'Gmaj'},{l:'E'}],[{l:'B5'}]],
+          code:'let i 1\nloop 15\nif i % 15 == 0\nprint FizzBuzz\nend',
+          tokens:['...','if','i','%','15','==','0','print','FizzBuzz','end'], output:[] },
+        { event:'↵ ENTER',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'},{l:'A5+A5'}],[{l:'Emin'},{l:'G#'},{l:'B5'},{l:'A5+A5'},{l:'F'}],[{l:'Gmaj'},{l:'E'}],[{l:'B5'}],[]],
+          code:'let i 1\nloop 15\nif i % 15 == 0\nprint FizzBuzz\nend',
+          tokens:['...','if','i','%','15','==','0','print','FizzBuzz','end'], output:[] },
+        { event:'✨ power chord: D5  (add i 1)  +  ✨ B5  (end loop)',
+          notationLines:[[{l:'Cmaj'},{l:'G#'},{l:'F'}],[{l:'Amin'},{l:'A5+A5'}],[{l:'Emin'},{l:'G#'},{l:'B5'},{l:'A5+A5'},{l:'F'}],[{l:'Gmaj'},{l:'E'}],[{l:'B5'}],[{l:'D5'},{l:'G#'},{l:'F'}],[{l:'B5'}]],
+          code:'let i 1\nloop 15\nif i % 15 == 0\nprint FizzBuzz\nend\nadd i 1\nend',
+          tokens:['...','print','FizzBuzz','end','add','i','1','end'],
+          output:['1','2','3','Fizz','4','Buzz','Fizz','7','8','Fizz','Buzz','11','Fizz','13','14'] },
+      ]},
+    };
+
+    /* ── DOM refs ── */
+    const elCode      = document.getElementById('dash-code');
+    const elNotation  = document.getElementById('dash-notation');
+    const elEvent     = document.getElementById('dash-last-event');
+    const elTokens    = document.getElementById('dash-tokens');
+    const elOutput    = document.getElementById('dash-output');
+    const btnPlay     = document.getElementById('dash-play');
+    const btnReset    = document.getElementById('dash-reset');
+    const speedSlider = document.getElementById('dash-speed');
+    const uiTabs      = document.querySelectorAll('.ui-tab');
+
+    let currentSession = 'count';
+    let frameIndex = 0;
+    let timer = null;
+    let playing = false;
+
+    /* ── Render a single frame ── */
+    function renderFrame(frame) {
+      /* code panel — syntax highlight kw / num / str */
+      if (!frame.code) {
+        elCode.innerHTML = '<span class="dash-waiting">▌ waiting for guitar input…</span>';
+      } else {
+        const hl = frame.code
+          .replace(/\b(let|loop|if|elif|else|end|print|add|sub|mul)\b/g,
+                   '<span class="kw">$1</span>')
+          .replace(/\b(\d+)\b/g, '<span class="num">$1</span>')
+          .replace(/(FizzBuzz|Fizz|Buzz|Hello|Done|word)/g,
+                   '<span class="str">$1</span>');
+        elCode.innerHTML = hl + '<span class="cursor-blink">▌</span>';
+      }
+
+      /* notation panel — lines of colored chips */
+      if (!frame.notationLines || frame.notationLines.length === 0) {
+        elNotation.innerHTML = '<span class="dash-waiting">waiting for input…</span>';
+      } else {
+        elNotation.innerHTML = frame.notationLines.map(line => {
+          if (!line.length) return '<div class="notation-line notation-empty">↵</div>';
+          const chips = line.map(({l}) => {
+            const t = chipType(l);
+            return `<span class="notechip ${t === 'power' ? 'power-chord' : t === 'note' ? 'note-name' : 'chord-name'}">${l}</span>`;
+          }).join('');
+          return `<div class="notation-line">${chips}</div>`;
+        }).join('');
+      }
+
+      /* last event */
+      if (frame.event === '—') {
+        elEvent.className = 'det-value dash-waiting';
+        elEvent.textContent = '—';
+      } else {
+        elEvent.className = 'det-value';
+        elEvent.textContent = frame.event;
+      }
+
+      /* token stream */
+      if (!frame.tokens || !frame.tokens.length) {
+        elTokens.className = 'det-value token-stream dash-waiting';
+        elTokens.textContent = '—';
+      } else {
+        elTokens.className = 'det-value token-stream';
+        elTokens.textContent = frame.tokens.join('  ');
+      }
+
+      /* output */
+      if (!frame.output || !frame.output.length) {
+        elOutput.innerHTML = '<span class="dash-waiting">—</span>';
+      } else {
+        elOutput.innerHTML = frame.output.map(l =>
+          `<span class="output-line">${l}</span>`).join('');
+      }
+    }
+
+    function reset() {
+      clearInterval(timer);
+      playing = false;
+      btnPlay.textContent = '▶\u00a0 Play Session';
+      frameIndex = 0;
+      renderFrame(SESSIONS[currentSession].frames[0]);
+    }
+
+    function step() {
+      const frames = SESSIONS[currentSession].frames;
+      if (frameIndex >= frames.length - 1) {
+        clearInterval(timer);
+        playing = false;
+        btnPlay.textContent = '▶\u00a0 Play Session';
+        return;
+      }
+      frameIndex++;
+      renderFrame(frames[frameIndex]);
+    }
+
+    btnPlay.addEventListener('click', () => {
+      if (playing) {
+        clearInterval(timer);
+        playing = false;
+        btnPlay.textContent = '▶\u00a0 Play Session';
+      } else {
+        if (frameIndex >= SESSIONS[currentSession].frames.length - 1) frameIndex = 0;
+        playing = true;
+        btnPlay.textContent = '⏸\u00a0 Pause';
+        const delay = 1300 - parseInt(speedSlider.value, 10);
+        timer = setInterval(step, Math.max(150, delay));
+      }
+    });
+
+    btnReset.addEventListener('click', reset);
+
+    speedSlider.addEventListener('input', () => {
+      if (playing) {
+        clearInterval(timer);
+        const delay = 1300 - parseInt(speedSlider.value, 10);
+        timer = setInterval(step, Math.max(150, delay));
+      }
+    });
+
+    uiTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        uiTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentSession = tab.dataset.session;
+        reset();
+      });
+    });
+
+    /* initialise */
+    reset();
+  })();
+  </script>
 </html>
