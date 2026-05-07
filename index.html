@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <!-- ── Nav ─────────────────────────────────────────────── -->
   <header class="site-header">
     <div class="container nav">
       <a class="brand" href="#top">
@@ -21,12 +23,15 @@
         <a href="#syntax">Syntax</a>
         <a href="#grammar">Grammar</a>
         <a href="#examples">Examples</a>
+        <a href="#demo">Demo</a>
         <a href="#links">Links</a>
       </nav>
     </div>
   </header>
 
   <main id="top">
+
+    <!-- ── Hero ──────────────────────────────────────────── -->
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
@@ -67,6 +72,7 @@ add i <span class="num">1</span>
       </div>
     </section>
 
+    <!-- ── About ──────────────────────────────────────────── -->
     <section id="about" class="section">
       <div class="container">
         <div class="section-heading">
@@ -97,11 +103,35 @@ add i <span class="num">1</span>
       </div>
     </section>
 
-    <img src="images2/System.png" alt="How it works" class="image">
-    <img src="musicalmapping.png" alt="Musical Mapping" class="image">
-    <img src="images/mapping2.png" alt="Single note Mapping">
-    <img src="images/mapping3.png" alt="Operator Mapping">
+    <!-- ── Diagrams / Images ──────────────────────────────── -->
+    <section class="image-section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Visual Reference</p>
+          <h3>How the system maps together</h3>
+        </div>
+        <div class="image-grid">
+          <figure class="image-frame">
+            <img src="images2/System.png" alt="How it works" />
+            <figcaption>System Overview</figcaption>
+          </figure>
+          <figure class="image-frame">
+            <img src="musicalmapping.png" alt="Musical Mapping" />
+            <figcaption>Musical Mapping</figcaption>
+          </figure>
+          <figure class="image-frame">
+            <img src="images/mapping2.png" alt="Single Note Mapping" />
+            <figcaption>Single Note Mapping</figcaption>
+          </figure>
+          <figure class="image-frame">
+            <img src="images/mapping3.png" alt="Operator Mapping" />
+            <figcaption>Operator Mapping</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
 
+    <!-- ── Syntax ─────────────────────────────────────────── -->
     <section id="syntax" class="section alt">
       <div class="container">
         <div class="section-heading">
@@ -115,8 +145,8 @@ add i <span class="num">1</span>
             <ul class="nice-list">
               <li><code>let name value</code></li>
               <li><code>print value</code></li>
-              <li><code>loop number</code> ... <code>end</code></li>
-              <li><code>if condition</code> ... <code>end</code></li>
+              <li><code>loop number</code> … <code>end</code></li>
+              <li><code>if condition</code> … <code>end</code></li>
               <li><code>elif condition</code></li>
               <li><code>else</code></li>
               <li><code>add name number</code></li>
@@ -140,6 +170,7 @@ add i <span class="num">1</span>
       </div>
     </section>
 
+    <!-- ── Grammar ────────────────────────────────────────── -->
     <section id="grammar" class="section">
       <div class="container">
         <div class="section-heading">
@@ -176,15 +207,15 @@ operator     ::= '==' | '!=' | '%' | '>' | '&lt;'</pre>
       </div>
     </section>
 
-    <section id="interpreter" class="section">
+    <!-- ── Interpreter ────────────────────────────────────── -->
+    <section id="interpreter" class="section alt">
       <div class="container">
         <div class="section-heading">
           <p class="eyebrow">Interpreter</p>
           <h3>Interpreter for Fretlang</h3>
         </div>
 
-<pre class="code-block">
-from __future__ import annotations
+<pre class="code-block">from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Dict, List
@@ -230,33 +261,7 @@ class Environment:
 
 
 class FretlangInterpreter:
-    """Interpreter for the Fretlang AST.
-
-    Design note:
-    The original guitar mapping does not define quote characters for string literals,
-    but FizzBuzz still needs words like Fizz, Buzz, and FizzBuzz. To make the language
-    playable on guitar, PrintStatement treats an undefined bare identifier as a raw word.
-    That means:
-
-        print i          -> prints the value of variable i, if it exists
-        print Fizz       -> prints the literal word "Fizz" if no variable exists
-    """
-
-    def __init__(self) -> None:
-        self.env = Environment()
-        self.output: List[str] = []
-
-    def run(self, node):
-        method_name = f'visit_{type(node).__name__}'
-        method = getattr(self, method_name, None)
-        if method is None:
-            raise FretlangRuntimeError(f'No interpreter handler for {type(node).__name__}')
-        return method(node)
-
-    def visit_Program(self, node: Program) -> List[str]:
-        for statement in node.statements:
-            self.run(statement)
-        return self.output
+    """Interpreter for the Fretlang AST."""
 
     def visit_LetStatement(self, node: LetStatement) -> None:
         value = self.run(node.value)
@@ -266,7 +271,7 @@ class FretlangInterpreter:
         count = self.run(node.count)
         if not isinstance(count, int):
             raise FretlangRuntimeError(f'Loop count must be an integer, got {count!r}.')
-        if count < 0:
+        if count &lt; 0:
             raise FretlangRuntimeError(f'Loop count must be non-negative, got {count}.')
         for _ in range(count):
             for statement in node.body:
@@ -277,13 +282,11 @@ class FretlangInterpreter:
             for statement in node.then_body:
                 self.run(statement)
             return
-
         for condition, body in node.elif_clauses:
             if self._is_truthy(self.run(condition)):
                 for statement in body:
                     self.run(statement)
                 return
-
         if node.else_body is not None:
             for statement in node.else_body:
                 self.run(statement)
@@ -294,71 +297,29 @@ class FretlangInterpreter:
         self.output.append(text)
         print(text)
 
-    def visit_IncrementStatement(self, node: IncrementStatement) -> None:
-        current = self.env.get(node.name)
-        if not isinstance(current, int):
-            raise FretlangRuntimeError(
-                f'Cannot increment non-integer variable "{node.name}" with value {current!r}.'
-            )
-        self.env.set(node.name, current + 1)
-
-    def visit_DecrementStatement(self, node: DecrementStatement) -> None:
-        current = self.env.get(node.name)
-        if not isinstance(current, int):
-            raise FretlangRuntimeError(
-                f'Cannot decrement non-integer variable "{node.name}" with value {current!r}.'
-            )
-        self.env.set(node.name, current - 1)
-
     def visit_UpdateStatement(self, node: UpdateStatement) -> None:
-        """Handle  add name amount / sub name amount / mul name amount."""
         current = self.env.get(node.name)
         amount = self.run(node.amount)
-        if not isinstance(current, (int, float)):
-            raise FretlangRuntimeError(
-                f'Cannot update non-numeric variable "{node.name}" with value {current!r}.'
-            )
         if node.op == '+':
             self.env.set(node.name, current + amount)
         elif node.op == '-':
             self.env.set(node.name, current - amount)
         elif node.op == '*':
             self.env.set(node.name, current * amount)
-        else:
-            raise FretlangRuntimeError(f'Unknown update operator: {node.op!r}')
 
     def visit_BinaryOp(self, node: BinaryOp):
         left = self.run(node.left)
         right = self.run(node.right)
-
-        if node.op == '%':
-            return left % right
-        if node.op == '==':
-            return left == right
-        if node.op == '!=':
-            return left != right
-        if node.op == '+':
-            return left + right
-        if node.op == '-':
-            return left - right
-        if node.op == '*':
-            return left * right
-        if node.op == '**':
-            return left ** right
-        if node.op == '>':
-            return left > right
-        if node.op == '<':
-            return left < right
-        if node.op == '&&':
-            return self._is_truthy(left) and self._is_truthy(right)
-
+        if node.op == '%':  return left % right
+        if node.op == '==': return left == right
+        if node.op == '!=': return left != right
+        if node.op == '+':  return left + right
+        if node.op == '-':  return left - right
+        if node.op == '*':  return left * right
+        if node.op == '**': return left ** right
+        if node.op == '>':  return left > right
+        if node.op == '&lt;':  return left &lt; right
         raise FretlangRuntimeError(f'Unsupported binary operator: {node.op}')
-
-    def visit_UnaryOp(self, node: UnaryOp):
-        value = self.run(node.operand)
-        if node.op == '!':
-            return not self._is_truthy(value)
-        raise FretlangRuntimeError(f'Unsupported unary operator: {node.op}')
 
     def visit_NumberLiteral(self, node: NumberLiteral) -> int:
         return int(node.value)
@@ -375,12 +336,12 @@ class FretlangInterpreter:
     def _resolve_print_value(self, expr):
         if isinstance(expr, Identifier) and not self.env.has(expr.name):
             return expr.name
-        return self.run(expr)
-
+        return self.run(expr)</pre>
       </div>
-    </section>    
+    </section>
 
-    <section id="examples" class="section alt">
+    <!-- ── Examples ───────────────────────────────────────── -->
+    <section id="examples" class="section">
       <div class="container">
         <div class="section-heading">
           <p class="eyebrow">Programs</p>
@@ -391,7 +352,7 @@ class FretlangInterpreter:
         <div class="cards three">
           <article class="card">
             <h4>hello.fret</h4>
-<pre class="mini-code">print Hello</pre>
+            <pre class="mini-code">print Hello</pre>
           </article>
 
           <article class="card">
@@ -446,7 +407,8 @@ end</pre>
       </div>
     </section>
 
-    <section class="section">
+    <!-- ── Implementation ─────────────────────────────────── -->
+    <section class="section alt">
       <div class="container">
         <div class="section-heading">
           <p class="eyebrow">Implementation</p>
@@ -470,25 +432,48 @@ end</pre>
       </div>
     </section>
 
+    <!-- ── Demo Video ──────────────────────────────────────── -->
+    <section id="demo" class="demo-section section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Demo</p>
+          <h3>See Fretlang in action</h3>
+          <p>A walkthrough of the language running programs from syntax to output.</p>
+        </div>
+        <div class="demo-video-wrapper">
+          <video controls preload="metadata">
+            <source src="Untitled_design.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Links ──────────────────────────────────────────── -->
     <section id="links" class="section alt">
       <div class="container">
         <div class="section-heading">
-          <p class="eyebrow"></p>
-          <h3>website links</h3>
+          <p class="eyebrow">Project Links</p>
+          <h3>Website links</h3>
         </div>
 
         <div class="cards two">
           <article class="card">
             <h4>Live Website Link</h4>
-            <p><a class="button secondary full" href="#">https://johnnythai11.github.io/fretLangwebsite/</a></p>
+            <p><a class="button secondary full" href="https://johnnythai11.github.io/fretLangwebsite/" target="_blank" rel="noopener">
+              https://johnnythai11.github.io/fretLangwebsite/
+            </a></p>
           </article>
           <article class="card">
             <h4>Git Source Code Link</h4>
-            <p><a class="button secondary full" href="#">https://github.com/johnnythai11/fretLangwebsite</a></p>
+            <p><a class="button secondary full" href="https://github.com/johnnythai11/fretLangwebsite" target="_blank" rel="noopener">
+              https://github.com/johnnythai11/fretLangwebsite
+            </a></p>
           </article>
         </div>
       </div>
     </section>
+
   </main>
 
   <footer class="site-footer">
@@ -497,5 +482,7 @@ end</pre>
       <p>Built with textX and Python</p>
     </div>
   </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
